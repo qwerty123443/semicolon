@@ -118,7 +118,7 @@ class Brainfuck(Interpreter):
         
 class Stacked_Brainfuck(Interpreter):
     """Stacked brainfuck interpreter"""
-    MEM_SIZE = 30000
+    MEM_SIZE = 65536 # as per the spec
     CELL_SIZE = 1<<8 # in bits
     def __init__(self, code, word):
         super().__init__(code, word)
@@ -129,30 +129,26 @@ class Stacked_Brainfuck(Interpreter):
         
     def step(self):
         c = self.code[self.code_ptr]
-        if self.stack:
-            if c == '$':
-                self.stack.pop()
-            elif c == '=':
-                self.memory[self.head] += self.stack[-1]
-            elif c == '_':
-                self.memory[self.head] -= self.stack[-1]
-            elif c == '}':
-                self.memory[self.head] >>= self.stack[-1]
-            elif c == '{':
-                self.memory[self.head] <<= self.stack[-1]
-            elif c == '|':
-                self.memory[self.head] |= self.stack[-1]
-            elif c == '^':
-                self.memory[self.head] ^= self.stack[-1]
-            elif c == '&':
-                self.memory[self.head] &= self.stack[-1]
-            self.memory[self.head] %= self.CELL_SIZE
+        if c == '$':
+            self.stack.pop()
+        elif c == '=':
+            self.memory[self.head] += self.stack[-1]
+        elif c == '_':
+            self.memory[self.head] -= self.stack[-1]
+        elif c == '}':
+            self.memory[self.head] >>= self.stack[-1]
+        elif c == '{':
+            self.memory[self.head] <<= self.stack[-1]
+        elif c == '|':
+            self.memory[self.head] |= self.stack[-1]
+        elif c == '^':
+            self.memory[self.head] ^= self.stack[-1]
+        elif c == '&':
+            self.memory[self.head] &= self.stack[-1]
         if c == '+':
             self.memory[self.head] += 1
-            self.memory[self.head] %= self.CELL_SIZE
         elif c == '-':
             self.memory[self.head] -= 1
-            self.memory[self.head] %= self.CELL_SIZE
         elif c == '>':
             self.head += 1
             self.head %= self.MEM_SIZE
@@ -195,6 +191,7 @@ class Stacked_Brainfuck(Interpreter):
             self.memory[self.head] = self.stack.pop() if self.stack else 0
         elif c == '@':
             self.memory[self.head] = self.stack[-1] if self.stack else 0
+        self.memory[self.head] %= self.CELL_SIZE
         self.code_ptr += 1
         if self.code_ptr >= len(self.code):
             self.state = Interpreter.DONE
