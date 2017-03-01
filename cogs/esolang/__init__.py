@@ -109,13 +109,12 @@ class Brainfuck(Interpreter):
                         nested += 1
                     if self.code[self.code_ptr] == '[':
                         nested -= 1
-        else:
-            return
         self.code_ptr += 1
         if self.code_ptr >= len(self.code):
             self.state = Interpreter.DONE
         return True
-        
+
+
 class Stacked_Brainfuck(Interpreter):
     """Stacked brainfuck interpreter"""
     MEM_SIZE = 65536 # as per the spec
